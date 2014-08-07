@@ -18,6 +18,7 @@ package org.tomitribe.util;
 
 import junit.framework.TestCase;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class JoinTest extends TestCase {
@@ -62,6 +63,50 @@ public class JoinTest extends TestCase {
         assertEquals(expected, actual);
     }
 
+    public void testClassCallback() throws Exception {
+
+        final String actual = Join.join("\n", new Join.ClassCallback(), Yellow.class, Green.class, White.class);
+
+        final String expected = "" +
+                "org.tomitribe.util.JoinTest$Yellow\n" +
+                "org.tomitribe.util.JoinTest$Green\n" +
+                "org.tomitribe.util.JoinTest$White";
+
+        assertEquals(expected, actual);
+    }
+
+    public void testMethodCallback() throws Exception {
+
+        final String actual = Join.join("\n", new Join.MethodCallback(),
+                Yellow.class.getMethod("yellow", String.class),
+                Green.class.getMethod("green", int.class),
+                White.class.getMethod("white", boolean.class)
+        );
+
+        final String expected = "" +
+                "yellow\n" +
+                "green\n" +
+                "white";
+
+        assertEquals(expected, actual);
+    }
+
+    public void testFileCallback() throws Exception {
+
+        final String actual = Join.join("\n", new Join.FileCallback(),
+                new File(new File("one"), "yellow"),
+                new File(new File("two"), "green"),
+                new File(new File("three"), "white")
+        );
+
+        final String expected = "" +
+                "yellow\n" +
+                "green\n" +
+                "white";
+
+        assertEquals(expected, actual);
+    }
+
     public static class Message {
         private final String message;
 
@@ -72,6 +117,21 @@ public class JoinTest extends TestCase {
         @Override
         public String toString() {
             return message;
+        }
+    }
+
+    public static class Yellow {
+        public void yellow(String s) {
+        }
+    }
+
+    public static class Green {
+        public void green(int i) {
+        }
+    }
+
+    public static class White {
+        public void white(boolean b) {
         }
     }
 }
